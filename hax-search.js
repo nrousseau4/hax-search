@@ -35,41 +35,69 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
     });
   }
 
-  // Lit reactive properties
   static get properties() {
     return {
-      ...super.properties,
       title: { type: String },
     };
   }
 
-  // Lit scoped styles
   static get styles() {
-    return [super.styles,
-    css`
+    return css`
+
       :host {
         display: block;
         color: var(--ddd-theme-primary);
         background-color: var(--ddd-theme-accent);
-        font-family: var(--ddd-font-navigation);
+        font-family: var(--ddd-font-primary);
       }
-      .wrapper {
-        margin: var(--ddd-spacing-2);
-        padding: var(--ddd-spacing-4);
+
+      input {
+        font-size: 20px;
+        line-height: var(--ddd-spacing-10);
+        width: 100%;
       }
-      h3 span {
-        font-size: var(--hax-search-label-font-size, var(--ddd-font-size-s));
-      }
-    `];
+    `;
   }
 
-  // Lit render the HTML
+  inputChanged(e) {
+    this.value = this.shadowRoot.querySelector('#input').value;
+  }
+  // life cycle will run when anything defined in `properties` is modified
+  updated(changedProperties) {
+    // see if value changes from user input and is not empty
+    if (changedProperties.has('value') && this.value) {
+      this.updateResults(this.value);
+    }
+    else if (changedProperties.has('value') && !this.value) {
+      this.items = [];
+    }
+    // @debugging purposes only
+    if (changedProperties.has('items') && this.items.length > 0) {
+      console.log(this.items);
+    }
+  }
+
+  // UPDATE FOR THIS PROJECT
+  updateResults(value) {
+    this.loading = true;
+    fetch(`https://images-api.nasa.gov/search?media_type=image&q=${value}`).then(d => d.ok ? d.json(): {}).then(data => {
+      if (data.collection) {
+        this.items = [];
+        this.items = data.collection.items;
+        this.loading = false;
+      }  
+    });
+  }
+
   render() {
     return html`
-<div class="wrapper">
-  <h3><span>${this.t.title}:</span> ${this.title}</h3>
-  <slot></slot>
-</div>`;
+      <div>
+        <input placeholder="Search HAX sites" @input="${this.inputChanged}"/>
+      </div>
+      <div class="whole-page">
+      
+      </div>
+    `;
   }
 
   /**
