@@ -38,10 +38,17 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
         font-family: var(--ddd-font-primary);
       }
 
+      .wrapper {
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        height: 100%;
+      }
+
       input {
         font-size: 20px;
         line-height: var(--ddd-spacing-10);
-        width: 100%;
+        width: 50%;
+        padding: 10px;
       }
     `;
   }
@@ -64,25 +71,30 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
     }
   }
 
-  // UPDATE FOR THIS PROJECT
+  ensureJsonExtension(value) {
+    if (!value.endsWith('.json')) {
+        value += '.json';
+    }
+    return value;
+}
+
   updateResults(value) {
+    ensureJsonExtension(value);
     this.loading = true;
-    fetch(`https://images-api.nasa.gov/search?media_type=image&q=${value}`).then(d => d.ok ? d.json(): {}).then(data => {
-      if (data.collection) {
-        this.items = [];
-        this.items = data.collection.items;
-        this.loading = false;
-      }  
+      fetch(`${this.jsonURL}`).then(d => d.ok ? d.json(): {}).then(data => {
+        if (data.collection) {
+          this.items = [];
+          this.items = data.collection.items;
+          this.loading = false;
+        }
     });
   }
 
   render() {
     return html`
-      <div>
+      <div class="wrapper">
+        <button>Analyze</button>
         <input placeholder="Search HAX sites" @input="${this.inputChanged}"/>
-      </div>
-      <div class="whole-page">
-      
       </div>
     `;
   }
@@ -93,6 +105,10 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
   static get haxProperties() {
     return new URL(`./lib/${this.tag}.haxProperties.json`, import.meta.url)
       .href;
+  }
+
+  static get tag() {
+    return "hax-search";
   }
 }
 
