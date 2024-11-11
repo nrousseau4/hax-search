@@ -11,44 +11,62 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
 
   constructor() {
     super();
-    this.title = '';
-    this.value = '';
+    this.value = null;
     this.loading = false;
-    this.items = [];
-    this.jsonURL = '';
+    this.metadata = [];
   }
 
   static get properties() {
     return {
-      title: { type: String },
       loading: { type: Boolean, reflect: true },
-      items: { type: Array },
+      metadata: { type: Array, },
       value: { type: String },
-      jsonURL: { type: String, attribute: 'json-url' },
     };
   }
 
   static get styles() {
     return css`
-
       :host {
         display: block;
-        color: var(--ddd-theme-primary);
-        background-color: var(--ddd-theme-accent);
-        font-family: var(--ddd-font-primary);
+        font-family: var(--ddd-font-primary)
+      }
+      :host([loading]) .results {
+        opacity: 0.1;
+        visibility: hidden;
+        height: 1px;
       }
 
-      .wrapper {
+      .search {
         display: flex;
-        justify-content: center; /* Centers horizontally */
-        height: 100%;
+        justify-content: center;
+        height: 60px;
+      }
+
+      .results {
+        visibility: visible;
+        height: 600px;
+        opacity: 1;
+        transition-delay: .5s;
+        transition: .5s all ease-in-out;
       }
 
       input {
         font-size: 20px;
         line-height: var(--ddd-spacing-10);
-        width: 50%;
-        padding: 10px;
+        width: 700px;
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--ddd-theme-default-link);
+      }
+      a:visited {
+        text-decoration: none;
+        color: var(--ddd-theme-default-link);
+      }
+
+      button {
+        margin: 0px 0px 0px 8px;
       }
     `;
   }
@@ -63,11 +81,11 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
       this.updateResults(this.value);
     }
     else if (changedProperties.has('value') && !this.value) {
-      this.items = [];
+      this.metadata = [];
     }
     // @debugging purposes only
-    if (changedProperties.has('items') && this.items.length > 0) {
-      console.log(this.items);
+    if (changedProperties.has('metadata') && this.meatadata.length > 0) {
+      console.log(this.metadata);
     }
   }
 
@@ -79,12 +97,12 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
 }
 
   updateResults(value) {
-    ensureJsonExtension(value);
+    this.ensureJsonExtension(value);
     this.loading = true;
-      fetch(`${this.jsonURL}`).then(d => d.ok ? d.json(): {}).then(data => {
-        if (data.collection) {
-          this.items = [];
-          this.items = data.collection.items;
+      fetch(`${value}`).then(d => d.ok ? d.json(): {}).then(data => {
+        if (data.metadata) {
+          this.metadata = [];
+          this.metadata = data.metadata.site;
           this.loading = false;
         }
     });
@@ -92,9 +110,23 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
 
   render() {
     return html`
-      <div class="wrapper">
-        <button>Analyze</button>
-        <input placeholder="Search HAX sites" @input="${this.inputChanged}"/>
+      <div class="search">
+        <form>
+          <input type="text" placeholder="Search HAX sites" @input="${this.inputChanged}"/>
+          <button>Analyze</button>
+        </form>
+      </div>
+      <div class="results">
+        ${this.metadata.map((data, index) => html`
+          <a href="${data.site[0].logo}" target="_blank">
+            <hax-card
+              source="${data.site[0].logo}"
+              alt="${data.data[0].description}"
+              title="${data.data[0].title}"
+              desc="By: ${data.data[0].secondary_creator}"
+            ></hax-card>
+          </a>
+        `)}
       </div>
     `;
   }
