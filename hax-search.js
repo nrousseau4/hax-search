@@ -129,19 +129,14 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
         <button @click="${this.analyze}">Analyze</button>
       </div>
       <div class="results">
-        ${this.items.map((item) => {
-          const img = item.metadata && item.metdata.files && item.metadata.files[0] ? item.metadata.files[0].url : '';
-          
-          return html`
+        ${this.items.map((item) => html`
             <hax-card
               title="${item.title}"
               desc="${item.description}"
-              logo="${img}"
               slug="${item.slug}"
               link="${this.link}"
             ></hax-card>
-          `;
-        })}
+        `)}
       </div>
     `;
   }

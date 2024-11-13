@@ -17,7 +17,7 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
         source: { type: String },
         title: { type: String },
         alt: { type : String },
-        desc: { type : String }
+        desc: { type : String },
     };
   }
 
@@ -35,17 +35,13 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
         background-color: var(--ddd-theme-default-keystoneYellow);
       }
 
-      .main {
-        width: 400px;
-        height: 300px;
-        display: flex;
-      }
-
       .card {
         display: inline-grid;
+        width: 400px;
+        height: 300px;
       }
 
-      .image {
+      .details {
         width: 240px;
         height: 180px;
         display: block;
@@ -59,6 +55,12 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
       .desc {
         height: var(--ddd-spacing-20);
         text-align: center;
+      }
+
+      img {
+        width: 240px;
+        height: 180px;
+        display: block;
       }
 
       a {
@@ -75,7 +77,7 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
         href="${this.link+'/'+this.slug}"
         target="_blank"
       >
-      <div class="image">
+      <div class="details">
         <img src="${this.link}/${this.logo}" alt="${this.title}"/>
         <div class="title">${this.title}</div>
         <div class="desc">${this.desc}</div>
