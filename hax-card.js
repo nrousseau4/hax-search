@@ -45,6 +45,12 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
         display: inline-grid;
       }
 
+      .image {
+        width: 240px;
+        height: 180px;
+        display: block;
+      }
+
       .title {
         height: var(--ddd-spacing-10);
         text-align: center;
@@ -53,12 +59,6 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
       .desc {
         height: var(--ddd-spacing-20);
         text-align: center;
-      }
-
-      img {
-        width: 240px;
-        height: 180px;
-        display: block;
       }
 
       a {
@@ -70,14 +70,17 @@ export class haxCard extends DDDSuper(I18NMixin(LitElement)) {
 
   render() {
     return html`
-      <div class="main">
-
-      </div>
-      <div class="card">
-        <img src="${this.source}" alt="${this.alt}"/>
+      <a class = "card"
+        tabindex="0"
+        href="${this.link+'/'+this.slug}"
+        target="_blank"
+      >
+      <div class="image">
+        <img src="${this.link}/${this.logo}" alt="${this.title}"/>
         <div class="title">${this.title}</div>
         <div class="desc">${this.desc}</div>
       </div>
+      </a>
     `;
   }
 

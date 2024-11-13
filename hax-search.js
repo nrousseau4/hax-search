@@ -11,16 +11,22 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
 
   constructor() {
     super();
-    this.value = null;
+    this.value = '';
+    this.title = '';
     this.loading = false;
-    this.metadata = [];
+    this.items = [];
+    this.jsonURL = "https://haxtheweb.org/site.json"
+    this.link = '';
   }
 
   static get properties() {
     return {
+      title: { type: String },
       loading: { type: Boolean, reflect: true },
-      metadata: { type: Array, },
+      items: { type: Array },
       value: { type: String },
+      jsonURL: { type: String, attribute: 'json-url' },
+      link: { type: String },
     };
   }
 
@@ -71,62 +77,71 @@ export class haxSearch extends DDDSuper(I18NMixin(LitElement)) {
     `;
   }
 
-  inputChanged(e) {
-    this.value = this.shadowRoot.querySelector('#input').value;
+  analyze(e) {
+    this.jsonURL = this.shadowRoot.querySelector('#input').value;
+    this.validateInput(this.jsonURL);
   }
-  // life cycle will run when anything defined in `properties` is modified
+
   updated(changedProperties) {
-    // see if value changes from user input and is not empty
-    if (changedProperties.has('value') && this.value) {
-      this.updateResults(this.value);
+    if (changedProperties.has('jsonURL')) {
+      this.updateResults(this.jsonURL);
     }
-    else if (changedProperties.has('value') && !this.value) {
-      this.metadata = [];
+    else if (changedProperties.has('jsonURL') && !this.jsonURL) {
+      this.items = [];
     }
-    // @debugging purposes only
-    if (changedProperties.has('metadata') && this.meatadata.length > 0) {
-      console.log(this.metadata);
+
+    if (changedProperties.has('items') && this.items.length > 0) {
+      console.log(this.items);
     }
   }
 
-  ensureJsonExtension(value) {
-    if (!value.endsWith('.json')) {
-        value += '.json';
+  validateInput(jsonURL) {
+    if (!jsonURL.endsWith('.json')) {
+        jsonURL += '.json';
     }
-    return value;
-}
+    else if (!jsonURL.startsWith('https://')) {
+        jsonURL = `https:// + ${jsonURL}`;
+    }
+    return jsonURL;
+  }
 
-  updateResults(value) {
-    this.ensureJsonExtension(value);
+  noJsonEnding(url) {
+    return url.replace(/\/?[^\/]*\/json$/, '');
+  }
+
+  updateResults(jsonURL) {
     this.loading = true;
-      fetch(`${value}`).then(d => d.ok ? d.json(): {}).then(data => {
-        if (data.metadata) {
-          this.metadata = [];
-          this.metadata = data.metadata.site;
-          this.loading = false;
-        }
-    });
+    this.baseURL = this.noJsonEnding(this.jsonURL);
+    fetch(`${jsonURL}`).then(d => d.ok ? d.json(): {}).then(data => {
+      if (data.collection) {
+        this.items = [];
+        this.items = data.items;
+        this.loading = false;
+      }  
+    })
   }
 
   render() {
     return html`
+      <h2>${this.title}</h2>
       <div class="search">
-        <form>
-          <input type="text" placeholder="Search HAX sites" @input="${this.inputChanged}"/>
-          <button>Analyze</button>
-        </form>
+        <input id="input" placeholder="Search HAX sites">
+        <button @click="${this.analyze}">Analyze</button>
       </div>
       <div class="results">
-        ${this.metadata.map((data, index) => html`
-          <a href="${data.site[0].logo}" target="_blank">
+        ${this.items.map((item) => {
+          const img = item.metadata && item.metdata.files && item.metadata.files[0] ? item.metadata.files[0].url : '';
+          
+          return html`
             <hax-card
-              source="${data.site[0].logo}"
-              alt="${data.data[0].description}"
-              title="${data.data[0].title}"
-              desc="By: ${data.data[0].secondary_creator}"
+              title="${item.title}"
+              desc="${item.description}"
+              logo="${img}"
+              slug="${item.slug}"
+              link="${this.link}"
             ></hax-card>
-          </a>
-        `)}
+          `;
+        })}
       </div>
     `;
   }
