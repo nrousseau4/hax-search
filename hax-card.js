@@ -27,66 +27,64 @@ export class HaxCard extends DDDSuper(I18NMixin(LitElement)) {
     return [super.styles,css`
       :host {
         display: block;
+        text-align: center;
       }
 
       .card {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        height: 500px;
+        background: var(--ddd-theme-default-white);
         overflow: hidden;
-        transition: transform 0.2s;
-        border: black;
-      }
-
-      .card:hover {
-        transform: translateY(-2px);
-      }
+        border: 1px solid black;
 
       .content {
-        padding: 1.5rem;
+        padding: var(--ddd-spacing-4);
       }
 
-      h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1.25rem;
+      .title {
+        text-align: center;
+        font-size: var(--ddd-spacing-6);
+        font-weight: var(--ddd-font-weight-bold);
+      }
+
+      .spacer {
+        height: var(--ddd-spacing-1);
       }
 
       .description {
         color: var(--ddd-theme-default-potential70);
-        margin-bottom: 1rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
         overflow: hidden;
+        height: var(--ddd-spacing-24);
+        max-height: var(--ddd-spacing-24);
       }
 
       .metadata {
-        font-size: 0.875rem;
+        margin-top: var(--ddd-spacing-3);
+        font-size: var(--ddd-spacing-4);
         color: var(--ddd-theme-default-potential50);
-        margin-bottom: 1rem;
+        margin-bottom: var(--ddd-spacing-4);
       }
 
       .actions {
+        margin-left: var(--ddd-spacing-3);
         display: flex;
-        gap: 0.5rem;
+        gap: var(--ddd-spacing-3);
       }
 
       .button {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
+        padding: var(--ddd-spacing-3) var(--ddd-spacing-3);
+        border-radius: var(--ddd-spacing-2);
         text-decoration: none;
-        font-weight: 500;
-        font-size: 0.875rem;
+        font-weight: var(--ddd-font-weight-medium);
       }
 
       .primary {
-        background: #2563eb;
-        color: white;
+        background: var(--ddd-theme-default-beaverBlue);
+        color: var(--ddd-theme-default-limestoneLight);
       }
 
       .secondary {
-        background: #f3f4f6;
-        color: #1f2937;
+        background: var(--ddd-theme-default-limestoneLight);
+        color: var(--ddd-theme-default-beaverBlue);
       }
     `];
   }
@@ -98,18 +96,22 @@ export class HaxCard extends DDDSuper(I18NMixin(LitElement)) {
 
   render() {
     const contentUrl = `${this.baseUrl}${this.slug}`;
-    const sourceUrl = `${this.baseUrl}${this.slug}/index.html`;
+    const sourceUrl = `${this.baseUrl}${this.location}`;
 
     return html`
       <div class="card">
+        <div class="content">
+          <div class="title">${this.title}</div>
+        </div>
         ${this.metadata?.image ? html`
-          <img src="${this.metadata.image}" alt="${this.title}" style="width: 100%; height: 200px; object-fit: cover;">
+          <img src="${this.metadata.image}" alt="${this.title}" style="width: 322px; max-height: 200px; object-fit: cover;">
         ` : ''}
         <div class="content">
-          <h3>${this.title}</h3>
           <div class="description">${this.description}</div>
           <div class="metadata">
             <div>Updated: ${this.dateToString(this.metadata?.updated)}</div>
+            <div class="spacer"></div>
+            <div>Read time: ${this.metadata?.readtime} minute(s)</div>
           </div>
           <div class="actions">
             <a href="${contentUrl}" target="_blank" class="button primary">View Content</a>

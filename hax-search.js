@@ -33,16 +33,15 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
       :host {
         font-family: var(--ddd-font-primary);
         display: block;
-        padding: 2rem;
+        padding: var(--ddd-spacing-8);
       }
 
       .header {
         text-align: center;
         margin-bottom: var(--ddd-spacing-5);
         font-weight: var(--ddd-font-weight-bold);
-        font-size: 40px;
+        font-size: var(--ddd-spacing-10);
       }
-
 
       .container{
         display: flex;
@@ -58,29 +57,30 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
         width: 700px;
         justify-content: center;
         gap: var(--ddd-spacing-3);
-        margin-bottom: 2rem;
+        margin-bottom: var(--ddd-spacing-9);
       }
 
       input {
         width: 500px;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
+        padding: var(--ddd-spacing-3) var(--ddd-spacing-4);
+        font-size: var(--ddd-spacing-4);
+        border: 1px solid var(--ddd-theme-default-limestoneMaxLight);
+        border-radius: var(--ddd-spacing-2);
       }
 
       button {
-        padding: 0.75rem 1.5rem;
-        background: #2563eb;
-        color: white;
+        padding: var(--ddd-spacing-5);
+        background: var(--ddd-theme-default-beaverBlue);
+        color: var(--ddd-theme-default-white);
         border: none;
-        border-radius: 0.5rem;
+        border-radius: var(--ddd-spacing-2);
         cursor: pointer;
-        font-weight: 500;
+        font-weight: var(--ddd-font-weight-bold);
+        font-size: var(--ddd-spacing-3);
       }
 
       button:hover {
-        background: #1d4ed8;
+        background: var(--ddd-theme-default-beaver80);
       }
 
       button:disabled {
@@ -88,37 +88,36 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
       }
 
       .error {
-        color: #dc2626;
+        color: var(--ddd-theme-default-error);
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: var(--ddd-spacing-4);
       }
 
       .results {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        padding: 1rem;
+        gap: var(--ddd-spacing-5);
+        padding: var(--ddd-spacing-4);
       }
 
       .site-overview {
         background: var(--ddd-theme-default-accent);
         width: 500px;
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
+        padding: var(--ddd-spacing-7);
+        border-radius: var(--ddd-spacing-2);
+        margin-bottom: var(--ddd-spacing-2);
         text-align: center;
       }
 
       .site-info {
         display: grid;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: var(--ddd-spacing-4);
+        margin-top: var(--ddd-spacing-4);
       }
 
       .site-title {
         font-weight: var(--ddd-font-weight-bold);
-        font-size: 30px;
+        font-size: var(--ddd-spacing-8);
       }
     `];
   }
@@ -177,12 +176,12 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
       <div class="container">
-        <div class="header">HAX Analyzer</div>
+        <div class="header">HAX Site Analyzer</div>
 
         <form class="search" @submit=${this.analyze}>
           <input 
             type="text" 
-            placeholder="Enter site URL (e.g., haxtheweb.org)"
+            placeholder="Search a HAX URL"
             ?disabled=${this.loading}
           >
           <button type="submit" ?disabled=${this.loading}>
@@ -218,6 +217,7 @@ export class HaxSearch extends DDDSuper(I18NMixin(LitElement)) {
               .slug=${item.slug}
               .baseUrl=${this.baseUrl}
               .metadata=${item.metadata}
+              .location=${item.location}
             ></hax-card>
           `)}
         </div>
